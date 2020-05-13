@@ -13,11 +13,21 @@ const executeQuery = (sql, params = []) => {
 }
 
 const assignToken = (payload, key=process.env.SECRET_KEY) => {
-    const token = jwt.sign(payload, key)
+    const token = jwt.sign(payload, key, {expiresIn:'7 days'})
     return token;
+}
+
+const verifyToken = (token, key=process.env.SECRET_KEY) => {
+    try{
+        const decoded = jwt.verify(token, key)
+        return decoded;
+    }catch(error){
+        throw error;
+    }
 }
 
 export {
     executeQuery,
-    assignToken
+    assignToken,
+    verifyToken
 }

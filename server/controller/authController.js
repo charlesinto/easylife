@@ -9,7 +9,7 @@ const createUser = async (req, res) => {
         if(response1.length > 0)
             return res.status(400).send({message: 'Email Address already exist'})
         const response2 = await executeQuery(`insert into users(firstName, lastName, phoneNumber, countryCode, country,
-                emailAddress, password) values(?,?,?,?,?,?,?)`, [firstName, lastName,phoneNumber, countryCode, country, emailAddress, hashPassword ])
+                emailAddress, password, role) values(?,?,?,?,?,?,?,?)`, [firstName, lastName,phoneNumber, countryCode, country, emailAddress, hashPassword,'user' ])
 
          const token = assignToken({emailAddress, firstName, lastName, phoneNumber})
          return res.status(201).send({
@@ -17,13 +17,39 @@ const createUser = async (req, res) => {
              token,
              firstName,
              lastName,
-             emailAddress
+             emailAddress,
+             role: user
          })
         }catch(error){
         return res.status(500).send(error)
     }
 }
 
+const loginUser = async (req, res) => {
+    try{
+        const {emailAddress, password} = req.body;
+        const response = await executeQuery('select * from users where emailAddress = ?', [emailAddress]);
+        if(response.length <= 0)
+            return res.status(404).send({message:'Email or password does not exist'})
+        const isPasswordEqualToHash = bcrypt.compareSync(password, response[0].password)
+        if(!isPasswordEqualToHash)
+            return res.status(404).send({message:'Email or password does not exist'})
+        const token = assignToken({emailAddress, firstName: response[0]['firstName'], 
+        lastName: response[0]['lastName'], phoneNumber: response[0]['phoneNumber'], role: response[0]['role']})
+        return res.status(200).send({
+            message: 'Login success',
+            token,
+            firstName: response[0]['firstName'],
+            lastName: response[0]['lastName'],
+            emailAddress,
+            role: response[0]['role']
+        })
+    }catch(error){
+        return res.status(500).send(error);
+    }
+}
+
 export {
-    createUser
+    createUser,
+    loginUser
 }
