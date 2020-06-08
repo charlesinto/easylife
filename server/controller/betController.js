@@ -21,6 +21,23 @@ const getBetController = async (req, res) => {
     }
 }
 
+const getBetCategoryById =  async (req, res) => {
+    try{
+        const id = req.params.id;
+        const response = await executeQuery('select * from bettingcategories where id = ?', [id])
+        return res.status(200).send({
+            message: 'Operation Successful',
+            response
+        });
+    }catch(error){
+        console.error(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
+
 const getUserWalletBalance = async (req, res) => {
     try{
         const response = await executeQuery('select * from userWalletBalance where userid = ?', [req.user.id])
@@ -98,5 +115,6 @@ export  {
     getBetController,
     getUserWalletBalance,
     getUserWalletHistory,
-    topUpWallet
+    topUpWallet,
+    getBetCategoryById
 };
