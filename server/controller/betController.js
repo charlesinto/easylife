@@ -1,6 +1,7 @@
 import { executeQuery } from "../util/helper"
 import PayStack from "paystack";
-import { p_SECRET_KEY } from "../config";
+
+const p_SECRET_KEY = process.env.p_SECRET_KEY
 
 const paystack = PayStack(p_SECRET_KEY)
 
