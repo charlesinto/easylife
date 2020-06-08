@@ -26,8 +26,25 @@ const verifyToken = (token, key=process.env.SECRET_KEY) => {
     }
 }
 
+const verifyTokenMiddleWare = (req, res, next) => {
+    try{
+        const key=process.env.SECRET_KEY
+        if(!req.headers['x-access-token'] || req.headers['x-access-token'].trim() === ''){
+            return res.status(403).send({message:'Insufficient authorization'});
+        }
+        const token = req.headers['x-access-token']
+        const decoded = jwt.verify(token, key)
+        req.user = decoded;
+        return next();
+    }catch(error){
+        console.log(error)
+        return res.status(403).send({message:'Insufficient authorization'});
+    }
+}
+
 export {
     executeQuery,
     assignToken,
-    verifyToken
+    verifyToken,
+    verifyTokenMiddleWare
 }
