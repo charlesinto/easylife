@@ -33,7 +33,37 @@ const getUserWalletBalance = async (req, res) => {
     }
 }
 
+const getUserWalletHistory = async (req, res) => {
+    try{
+        const response = await executeQuery('select * from userWalletHistory where userId = ?', [req.user.id])
+        return res.status(200).send({
+            message: 'Operation Successful',
+            data: response
+        })
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
+
+const topUpWallet = async (req, res) => {
+    try{
+
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
+
 export  {
     getBetController,
-    getUserWalletBalance
+    getUserWalletBalance,
+    getUserWalletHistory,
+    topUpWallet
 };
