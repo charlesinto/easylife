@@ -1,4 +1,4 @@
-import { userCreationSchema, userLoginSchema } from "../model/user"
+import { userCreationSchema, userLoginSchema, walletTopUpSchema } from "../model/user"
 
 const validateUserCreateParams = (req, res, next) => {
     try{
@@ -23,7 +23,20 @@ const validateUserLoginParams = (req, res, next) => {
     }
 }
 
+const verifyTopUpParams = (req, res, next) => {
+    try{
+        const {error} = walletTopUpSchema.validate(req.body);
+        if(error)
+            return res.status(400).send(error)
+
+        next()
+    }catch(error){
+        return res.status(500).send(error)
+    }
+}
+
 export {
     validateUserCreateParams,
-    validateUserLoginParams
+    validateUserLoginParams,
+    verifyTopUpParams
 }

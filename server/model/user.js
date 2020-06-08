@@ -16,7 +16,13 @@ const userLoginSchema = Joi.object({
     password: Joi.string().required()
 })
 
+const walletTopUpSchema = Joi.object({
+    transactionRef: Joi.string().required(),
+    amount: Joi.string().required()
+})
+
 export {
     userCreationSchema,
-    userLoginSchema
+    userLoginSchema,
+    walletTopUpSchema
 }
