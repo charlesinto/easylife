@@ -11,6 +11,7 @@ const createUser = async (req, res) => {
         await executeQuery(`insert into users(firstName, lastName, phoneNumber, countryCode, country,
                 emailAddress, password, role) values(?,?,?,?,?,?,?,?)`, [firstName, lastName,phoneNumber, countryCode, country, emailAddress, hashPassword,'user' ])
         const response3= await executeQuery('select * from users where emailAddress = ?', [emailAddress]);
+        await executeQuery('insert into userWalletBalance(userid, balance) values(?,?);', [response3[0].id, 0])
          const token = assignToken({emailAddress, firstName,id: response3[0][id], lastName, phoneNumber})
          return res.status(201).send({
              message: 'User created successfully',
