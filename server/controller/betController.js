@@ -1,5 +1,8 @@
 import { executeQuery } from "../util/helper"
+import PayStack from "paystack";
+import { p_SECRET_KEY } from "../config";
 
+const paystack = PayStack(p_SECRET_KEY)
 
 const getBetController = async (req, res) => {
     try{
@@ -51,7 +54,36 @@ const getUserWalletHistory = async (req, res) => {
 
 const topUpWallet = async (req, res) => {
     try{
+        const { transactionRef, amount: reqAmount} = req.body;
+        paystack.transaction.verify(transactionRef, async function(error, body){
+            if(error){
+                console.log(error);
+                return res.status(500).send({
+                    message: 'Some error were encountered',
+                    error
+                })
+            }
+            const {data: { amount, }} = body;
+            if(parseInt(reqAmount) != parseInt(amount)){
+                return res.status(400).send({
+                    message:'Payment mismatch',
+                })
+            }
+            const response = await executeQuery('select * from userWalletBalance where userId = ?', [req.user.id])
+            const balance = parseInt(response[0]['balance']);
+            const newBalance = balance + amount;
+            await executeQuery('update userWalletBalance set balance = ? where userId = ?', [newBalance, req.user.id])
 
+            await executeQuery(`insert into userWalletHistory(walletId, userId, transactionType, paymentChannel, paymentReference, amount) 
+                values (?,?,?,?,?,?);`, [response[0]['balance'],req.user.id, 'topup','paystack',transactionRef, reqAmount ])
+            
+            const response3 = await executeQuery('select * from userWalletBalance where userid = ?', [req.user.id])
+
+            return res.status(201).send({
+                message:'Operation Successful',
+                data: response3[0]
+            })
+        })
     }catch(error){
         console.log(error);
         return res.status(500).send({
