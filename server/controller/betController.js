@@ -133,9 +133,11 @@ const topUpWallet = async (req, res) => {
 const playGame = async (req, res) => {
     try{
         const {stakes, betId, amountStake, totalWinning} = req.body;
+        console.log(stakes, betId, amountStake, totalWinning)
         await executeQuery('insert into games(amountStake,totalWinning, betId, userId) values(?,?,?,?)', [amountStake,totalWinning,betId, req.user.id])
-
-        const response = await executeQuery('select * from games where datecreated = (select Max(datecreated) from games where userId = ?)', [req.user])
+       
+        const response = await executeQuery('select * from games where userId = ? and datecreated = (select Max(datecreated) from games)', [req.user.id])
+        
         const gameId = response[0].id;
         stakes.forEach( async (bet) => {
             await executeQuery('insert into stakes(gameId, stake) values(?,?)', [gameId, bet])
@@ -161,6 +163,7 @@ const playGame = async (req, res) => {
 const getAllUserGames = async (req, res) => {
     try{
         const games = await executeQuery('select * from games where userId = ?', [req.user.id])
+        console.log(games)
         const playedBets = [];
         games.forEach(async (game) => {
             const bets = await executeQuery('select * from stakes where gameId = ?', [game.id])
