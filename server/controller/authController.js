@@ -51,7 +51,20 @@ const loginUser = async (req, res) => {
     }
 }
 
+const getUserProfile = async (req, res) => {
+    try{
+        const response = await executeQuery('select * from users where id = ?', [req.user.id]);
+        return res.status(200).send({
+            message: 'Operation Successful', 
+            response
+        })
+    }catch(error){
+        console.log(error)
+        return res.status(500).send(error);
+    }
+}
+
 export {
     createUser,
-    loginUser
+    loginUser, getUserProfile
 }

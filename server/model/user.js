@@ -21,8 +21,22 @@ const walletTopUpSchema = Joi.object({
     amount: Joi.string().required()
 })
 
+const trasactionReportSchema = Joi.object({
+    DateFrom: Joi.string().required(),
+     DateTo: Joi.string().required()
+})
+
+const playGameSchema = Joi.object({
+    stakes: Joi.array().required(),
+     betId: Joi.number().required(), 
+     amountStake: Joi.number().required(), 
+     totalWinning: Joi.number().required()
+})
+
 export {
     userCreationSchema,
     userLoginSchema,
-    walletTopUpSchema
+    walletTopUpSchema,
+    trasactionReportSchema,
+    playGameSchema
 }

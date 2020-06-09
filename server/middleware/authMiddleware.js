@@ -1,4 +1,4 @@
-import { userCreationSchema, userLoginSchema, walletTopUpSchema } from "../model/user"
+import { userCreationSchema, userLoginSchema, walletTopUpSchema,trasactionReportSchema, playGameSchema } from "../model/user"
 
 const validateUserCreateParams = (req, res, next) => {
     try{
@@ -35,8 +35,36 @@ const verifyTopUpParams = (req, res, next) => {
     }
 }
 
+const transactionReportParams = (req, res, next) => {
+    try{
+        const {error} = trasactionReportSchema.validate(req.body);
+        if(error)
+            return res.status(400).send(error)
+
+        next()
+    }catch(error){
+        return res.status(500).send(error)
+    }
+
+}
+
+const verifyGameSchema = (req, res, next) => {
+    try{
+        const {error} = playGameSchema.validateAsync(req.body);
+        if(error){
+            return res.status(400).send(error);
+        }
+        next();
+    }catch(error){
+        console.log(error)
+        return res.status(500).send(error)
+    }
+}
+
 export {
     validateUserCreateParams,
     validateUserLoginParams,
-    verifyTopUpParams
+    verifyTopUpParams,
+    transactionReportParams,
+    verifyGameSchema
 }
