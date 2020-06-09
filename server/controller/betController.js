@@ -74,7 +74,7 @@ const getUserWalletHistory = async (req, res) => {
 const getTransactionBetweenDate = async (req, res) => {
     try{
         const {DateFrom, DateTo} = req.body;
-        const response = await executeQuery('select * from userWalletHistory where userId = ? and datecreated > ? and < ?', [req.user.id, DateFrom, DateTo])
+        const response = await executeQuery('select * from userWalletHistory where userId = ? and datecreated between ? and ?', [req.user.id, DateFrom, DateTo])
         return res.status(200).send({
             message: 'Operation Successful',
             response
