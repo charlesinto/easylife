@@ -70,6 +70,25 @@ const getUserWalletHistory = async (req, res) => {
     }
 }
 
+
+const getTransactionBetweenDate = async (req, res) => {
+    try{
+        const {DateFrom, DateTo} = req.body;
+        const response = await executeQuery('select * from userWalletHistory where userId = ? and datecreated > ? and < ?', [req.user.id, DateFrom, DateTo])
+        return res.status(200).send({
+            message: 'Operation Successful',
+            response
+        })
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+
+}
+
 const topUpWallet = async (req, res) => {
     try{
         const { transactionRef, amount: reqAmount} = req.body;
@@ -111,10 +130,65 @@ const topUpWallet = async (req, res) => {
     }
 }
 
+const playGame = async (req, res) => {
+    try{
+        const {stakes, betId, amountStake, totalWinning} = req.body;
+        await executeQuery('insert into games(amountStake,totalWinning, betId, userId) values(?,?,?,?)', [amountStake,totalWinning,betId, req.user.id])
+
+        const response = await executeQuery('select * from games where datecreated = (select Max(datecreated) from games where userId = ?)', [req.user])
+        const gameId = response[0].id;
+        stakes.forEach( async (bet) => {
+            await executeQuery('insert into stakes(gameId, stake) values(?,?)', [gameId, bet])
+        })
+        const games = await executeQuery('select * from games where id = ?', [gameId])
+        const bets = await executeQuery('select * from stakes where gameId = ?', [gameId])
+        return res.status(200).send({
+            message: 'Operation Successful',
+            data:{
+                games,
+                bets
+            }
+        })
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
+
+const getAllUserGames = async (req, res) => {
+    try{
+        const games = await executeQuery('select * from games where userId = ?', [req.user.id])
+        const playedBets = [];
+        games.forEach(async (game) => {
+            const bets = await executeQuery('select * from stakes where gameId = ?', [game.id])
+            playedBets.push({
+                [games.id]: bets
+            })
+        })
+
+        return res.status(200).send({
+            message: 'Operation Successful',
+            playedBets
+        })
+        
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
 export  {
     getBetController,
     getUserWalletBalance,
     getUserWalletHistory,
     topUpWallet,
-    getBetCategoryById
+    getBetCategoryById,
+    getTransactionBetweenDate,
+    playGame,
+    getAllUserGames
 };
