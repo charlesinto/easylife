@@ -112,7 +112,7 @@ const topUpWallet = async (req, res) => {
             await executeQuery('update userWalletBalance set balance = ? where userId = ?', [newBalance, req.user.id])
 
             await executeQuery(`insert into userWalletHistory(walletId, userId, transactionType, paymentChannel, paymentReference, amount) 
-                values (?,?,?,?,?,?);`, [response[0]['balance'],req.user.id, 'topup','paystack',transactionRef, reqAmount ])
+                values (?,?,?,?,?,?);`, [response[0]['id'],req.user.id, 'topup','paystack',transactionRef, reqAmount ])
             
             const response3 = await executeQuery('select * from userWalletBalance where userid = ?', [req.user.id])
 
