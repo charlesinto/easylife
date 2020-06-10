@@ -101,18 +101,18 @@ const topUpWallet = async (req, res) => {
                 })
             }
             const {data: { amount, }} = body;
-            if(parseInt(reqAmount) != parseInt(amount)){
-                return res.status(400).send({
-                    message:'Payment mismatch',
-                })
-            }
+            // if(parseInt(reqAmount) != parseInt(amount)){
+            //     return res.status(400).send({
+            //         message:'Payment mismatch',
+            //     })
+            // }
             const response = await executeQuery('select * from userWalletBalance where userId = ?', [req.user.id])
             const balance = parseInt(response[0]['balance']);
             const newBalance = balance + amount;
             await executeQuery('update userWalletBalance set balance = ? where userId = ?', [newBalance, req.user.id])
 
             await executeQuery(`insert into userWalletHistory(walletId, userId, transactionType, paymentChannel, paymentReference, amount) 
-                values (?,?,?,?,?,?);`, [response[0]['balance'],req.user.id, 'topup','paystack',transactionRef, reqAmount ])
+                values (?,?,?,?,?,?);`, [response[0]['id'],req.user.id, 'topup','paystack',transactionRef, reqAmount ])
             
             const response3 = await executeQuery('select * from userWalletBalance where userid = ?', [req.user.id])
 
