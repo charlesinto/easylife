@@ -101,11 +101,11 @@ const topUpWallet = async (req, res) => {
                 })
             }
             const {data: { amount, }} = body;
-            if(parseInt(reqAmount) != parseInt(amount)){
-                return res.status(400).send({
-                    message:'Payment mismatch',
-                })
-            }
+            // if(parseInt(reqAmount) != parseInt(amount)){
+            //     return res.status(400).send({
+            //         message:'Payment mismatch',
+            //     })
+            // }
             const response = await executeQuery('select * from userWalletBalance where userId = ?', [req.user.id])
             const balance = parseInt(response[0]['balance']);
             const newBalance = balance + amount;
