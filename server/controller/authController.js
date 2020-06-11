@@ -13,6 +13,7 @@ const createUser = async (req, res) => {
         const response3= await executeQuery('select * from users where emailAddress = ?', [emailAddress]);
         await executeQuery('insert into userWalletBalance(userid, balance) values(?,?);', [response3[0].id, 0])
          const token = assignToken({emailAddress, firstName,id: response3[0][id], lastName, phoneNumber})
+         await executeQuery('insert into notifications(message, userId)values(?,?)', ['You are welcome to easy, we hope to make the platform as rewarding as possible',response3[0].id ])
          return res.status(201).send({
              message: 'User created successfully',
              token,
