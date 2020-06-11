@@ -1,6 +1,6 @@
 import express from 'express';
 import { verifyTokenMiddleWare } from '../util/helper';
-import { getUserWalletBalance, getUserWalletHistory, topUpWallet, getTransactionBetweenDate, playGame, getAllUserGames } from '../controller/betController';
+import { getUserWalletBalance, getUserWalletHistory, topUpWallet, getTransactionBetweenDate, playGame, getAllUserGames, getBetStakes } from '../controller/betController';
 import { verifyTopUpParams, transactionReportParams, verifyGameSchema } from '../middleware/authMiddleware';
 
 const router = express.Router();
@@ -17,5 +17,7 @@ router.post('/user/transaction-report',verifyTokenMiddleWare, transactionReportP
 router.post('/play-game', verifyTokenMiddleWare, verifyGameSchema, playGame)
 
 router.get('/get-all-games', verifyTokenMiddleWare, getAllUserGames)
+
+router.get('/game/:id/stakes', verifyTokenMiddleWare, getBetStakes)
 
 export default router;

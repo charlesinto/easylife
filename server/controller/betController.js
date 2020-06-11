@@ -101,11 +101,11 @@ const topUpWallet = async (req, res) => {
                 })
             }
             const {data: { amount, }} = body;
-            // if(parseInt(reqAmount) != parseInt(amount)){
-            //     return res.status(400).send({
-            //         message:'Payment mismatch',
-            //     })
-            // }
+            if(parseInt(reqAmount) != parseInt(amount)){
+                return res.status(400).send({
+                    message:'Payment mismatch',
+                })
+            }
             const response = await executeQuery('select * from userWalletBalance where userId = ?', [req.user.id])
             const balance = parseInt(response[0]['balance']);
             const newBalance = balance + amount;
@@ -163,18 +163,18 @@ const playGame = async (req, res) => {
 const getAllUserGames = async (req, res) => {
     try{
         const games = await executeQuery('select * from games where userId = ?', [req.user.id])
-        console.log(games)
-        const playedBets = [];
-        games.forEach(async (game) => {
-            const bets = await executeQuery('select * from stakes where gameId = ?', [game.id])
-            playedBets.push({
-                [games.id]: bets
-            })
-        })
+        // console.log(games)
+        // const playedBets = [];
+        // games.forEach(async (game) => {
+        //     const bets = await executeQuery('select * from stakes where gameId = ?', [game.id])
+        //     playedBets.push({
+        //         [games.id]: bets
+        //     })
+        // })
 
         return res.status(200).send({
             message: 'Operation Successful',
-            playedBets
+            games
         })
         
     }catch(error){
@@ -185,6 +185,29 @@ const getAllUserGames = async (req, res) => {
         })
     }
 }
+
+const getBetStakes = async (req, res) => {
+    try{
+        const id = req.params.id;
+        if(id === null){
+            return res.status(400).send({
+                message: 'Bad Request',
+            })
+        }
+        const bets = await executeQuery('select * from stakes where gameId = ?', [id])
+        return res.status(200).send({
+            message: 'Operation Successful',
+            bets
+        })
+    }catch(error){
+        console.log(error);
+        return res.status(500).send({
+            message: 'Some errors were encountered',
+            error
+        })
+    }
+}
+
 export  {
     getBetController,
     getUserWalletBalance,
@@ -193,5 +216,7 @@ export  {
     getBetCategoryById,
     getTransactionBetweenDate,
     playGame,
-    getAllUserGames
+    getAllUserGames,
+    getBetStakes
+
 };
