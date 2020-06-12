@@ -3,7 +3,7 @@ import { executeQuery } from "../util/helper";
 
 const getUserNotifications = async (req, res) => {
     try{
-        const response = await executeQuery('select * from notifications where status=? and userid =?', ['new', req.user.id])
+        const response = await executeQuery('select * from notifications where userid =?', [req.user.id])
         return res.status(200).send({
             message:'Operation Successful',
             response
