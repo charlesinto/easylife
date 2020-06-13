@@ -195,9 +195,13 @@ const getBetStakes = async (req, res) => {
             })
         }
         const bets = await executeQuery('select * from stakes where gameId = ?', [id])
+        const numbersPlays = [];
+        bets.forEach(bet =>{
+            numbersPlays.push(bet['stake'])
+        })
         return res.status(200).send({
             message: 'Operation Successful',
-            bets
+            bets: numbersPlays
         })
     }catch(error){
         console.log(error);
